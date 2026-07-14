@@ -32,7 +32,7 @@ BATCH_SIZE = 8
 VID_FRAMES = 3
 PROJECT_ID = "keyworder-noorg"
 REGION     = "us-east5"
-MODEL      = "claude-sonnet-4-6"
+MODEL      = "claude-sonnet-4-5"
 
 STOP_WORDS = {
     "apple","iphone","ipad","macbook","android","google","samsung","microsoft",
