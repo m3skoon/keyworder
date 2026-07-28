@@ -14,17 +14,15 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install pillow pyinstaller google-auth requests
+        run: pip install anthropic pillow pyinstaller
 
       - name: Build EXE
         run: |
           pyinstaller --onefile --noconsole --name Keyworder `
+            --hidden-import anthropic `
             --hidden-import PIL `
             --hidden-import PIL.Image `
             --hidden-import PIL.ImageOps `
-            --hidden-import google.auth `
-            --hidden-import google.oauth2.service_account `
-            --hidden-import google.auth.transport.requests `
             keyworder.py
 
       - name: Upload artifact
