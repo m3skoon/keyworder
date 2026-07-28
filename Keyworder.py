@@ -229,7 +229,7 @@ def call_claude(client, batch, topic, prepend, append, log_fn):
     for attempt in range(3):
         try:
             resp = client.messages.create(
-                model="claude-sonnet-4-6",
+                model="claude-haiku-4-5",
                 max_tokens=min(8000, len(batch)*KW_COUNT*14+500),
                 system=SYSTEM_RULES,
                 messages=[{"role":"user","content":content}])
