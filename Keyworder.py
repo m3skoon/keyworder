@@ -266,7 +266,19 @@ class App(tk.Tk):
         if show: kw["show"]=show
         if readonly: kw.update(state="readonly",readonlybackground="#FAFAFA")
         if width: kw["width"]=width
-        return tk.Entry(parent,**kw)
+        e=tk.Entry(parent,**kw)
+        # Fix paste on Windows
+        def _paste(event):
+            try:
+                text=e.clipboard_get()
+                try: e.delete(tk.SEL_FIRST,tk.SEL_LAST)
+                except: pass
+                e.insert(tk.INSERT,text)
+            except: pass
+            return "break"
+        e.bind("<Control-v>",_paste)
+        e.bind("<Control-V>",_paste)
+        return e
 
     def _divider(self,p): tk.Frame(p,bg=self.BDR,height=1).pack(fill="x",pady=(4,8))
 
