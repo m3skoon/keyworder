@@ -124,34 +124,39 @@ SYSTEM_PROMPT = """You are a professional Adobe Stock metadata specialist with y
 
 You have analyzed thousands of successful Adobe Stock files and know exactly what sells.
 
-TITLE RULES:
-- Write exactly 3 sentences
-- Sentence 1: Describe what is shown (subject + action + context)
-- Sentence 2: Professional context — who would buy this and why
-- Sentence 3: End with the main commercial concept keyword + "concept"
-- Maximum 200 characters total
-- Natural English, no brand names, no city names
+TITLE RULES — STRICTLY FOLLOW THIS FORMULA:
+- Exactly 3 sentences, ending with a period after each sentence
+- Sentence 1: Describe what is shown (subject + action/state + specific context details)
+- Sentence 2: Who buys this image and for what purpose (advertising agencies, brands, companies, editors)
+- Sentence 3: Main commercial concept ending with "concept" (e.g. "Urban nighttime advertisement concept.")
+- Maximum 200 characters total — keep sentences concise
+- Natural English, no brand names, no city names, no personal names
 
-KEYWORD RULES:
-- Exactly 49 keywords, ALL single words or maximum 2-word phrases
-- NO long phrases like "circuit breaker malfunction" — only "circuit" and "breaker" separately
+TITLE EXAMPLES (follow this quality and style):
+"Blank white billboard mockup in subway station with yellow safety lines. Advertising agencies use transit placements for urban campaign visibility. Empty display advertisement concept."
+"Man handing brown envelope to colleague secretly under restaurant table. Corporations and media outlets license for fraud and investigation stories. Corruption and bribery concept."
+"Nurse labeling blood sample test tube from patient sitting in chair. Healthcare brands and medical publishers use for clinical service illustrations. Medical diagnostic concept."
+
+KEYWORD RULES — CRITICAL:
+- EXACTLY 49 keywords — no more, no less. Count carefully before returning.
+- ALL single words or maximum 2-word phrases ONLY
+- NO long phrases — split them: not "circuit breaker malfunction" but "circuit", "breaker", "malfunction"
 - NO brand names, NO city names, NO personal names
-- Positions 1-3: The most searched commercial terms for this image (what buyers type)
-- Positions 4-15: Main subject, action, key details
-- Positions 16-30: Colors, materials, setting, environment
-- Positions 31-49: Concepts, emotions, synonyms, related themes
-- Use professional terminology where appropriate
-- Include both specific and general terms
-- Think like a buyer: insurance company, news editor, blog writer, marketer
+- NO duplicate words
+- Positions 1-3: The most searched commercial buyer-intent terms (what buyers type in Adobe Stock)
+- Positions 4-15: Main subject, action, key details, professional terms
+- Positions 16-30: Colors, materials, textures, setting, environment, lighting
+- Positions 31-49: Concepts, emotions, synonyms, related themes, abstract ideas
+- Think like a buyer: insurance company, news editor, blog writer, marketer, advertiser
 
-EXAMPLES of good keywords (single/2-word only):
+KEYWORD EXAMPLES (single/2-word only):
 corruption, bribe, crime, man, envelope, secret, deal, exchange, illegal,
 table, restaurant, dark, shadow, hand, document, business, finance, fraud,
 scandal, corporate, payment, cash, unethical, conspiracy, investigation
 
-BAD keywords (too long, never use):
+BAD keywords (too long — never use):
 "circuit breaker malfunction", "emergency situation", "dangerous condition",
-"safety concern", "appliance malfunction" """
+"safety concern", "appliance malfunction", "white subway tile", "golden hour lighting" """
 
 def make_prompt(names, topic, prepend, append):
     lines = "\n".join(f"  [{i+1}] {n}" for i,n in enumerate(names))
@@ -164,8 +169,10 @@ Files:
 {lines}
 
 Generate for EACH file:
-1. Title (3 sentences, max 200 chars, commercial and descriptive)
-2. Exactly 49 keywords (single words or max 2-word phrases, no long phrases)
+1. Title: exactly 3 sentences ending with periods, max 200 chars total, commercial quality
+2. Keywords: EXACTLY 49 — count them carefully. Single words or max 2-word phrases only.
+
+IMPORTANT: Before returning, verify each file has exactly 49 keywords. If you have fewer — add relevant synonyms or related terms to reach exactly 49.
 
 Return ONLY raw JSON array:
 [
@@ -613,3 +620,4 @@ class App(tk.Tk):
 if __name__=="__main__":
     multiprocessing.freeze_support()
     App().mainloop()
+
