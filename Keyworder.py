@@ -170,7 +170,7 @@ Files:
 
 Generate for EACH file:
 1. Title: exactly 3 sentences ending with periods, max 150 chars total, commercial quality
-2. Keywords: generate 55 relevant keywords — single words or max 2-word phrases only. All must be relevant to the image content and commercial context. No generic fillers.
+2. Keywords: generate exactly 49 relevant keywords — single words or max 2-word phrases only. All must be relevant to the image content and commercial context. No generic fillers.
 
 Return ONLY raw JSON array:
 [
@@ -580,7 +580,29 @@ class App(tk.Tk):
             for idx,item in enumerate(batch):
                 matched=next((r for r in res if r.get("index",0)-1==idx),None)
                 if matched is None and idx<len(res): matched=res[idx]
-                kws=clean_keywords((matched.get("keywords",[]) if matched else []))[:KW_COUNT]
+                all_kws=clean_keywords((matched.get("keywords",[]) if matched else []))
+                kws=all_kws[:KW_COUNT]
+                # If less than 49 — fill from title words (relevant, no stopwords, no duplicates)
+                if len(kws) < KW_COUNT and matched:
+                    SKIP = {"with","from","that","this","their","they","have","will",
+                            "been","were","when","what","your","which","into","over",
+                            "also","each","more","than","then","them","these","those",
+                            "about","after","under","other","some","such","even","most",
+                            "used","uses","using","through","during","across","between",
+                            "against","within","without","around","along","above","below",
+                            "while","where","there","here","just","only","both","very",
+                            "high","well","back","make","take","give","show","work","need",
+                            "good","long","look","come","could","would","should","because"}
+                    title_str = matched.get("title","")
+                    title_words = [w.strip('.,!?;:()[]').lower() for w in title_str.split()]
+                    seen = set(k.lower() for k in kws)
+                    for tw in title_words:
+                        if len(kws) >= KW_COUNT: break
+                        cleaned = _clean(tw, STOP_WORDS)
+                        if (cleaned and len(cleaned) >= 4 and cleaned.isalpha()
+                                and cleaned not in seen and cleaned not in SKIP):
+                            kws.append(cleaned)
+                            seen.add(cleaned)
                 raw_title=clean_title(matched.get("title","") if matched else "")
                 # Trim title to 150 chars at last sentence boundary
                 if len(raw_title) > 150:
