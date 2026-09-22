@@ -169,10 +169,8 @@ Files:
 {lines}
 
 Generate for EACH file:
-1. Title: exactly 3 sentences ending with periods, max 200 chars total, commercial quality
-2. Keywords: EXACTLY 49 — count them carefully. Single words or max 2-word phrases only.
-
-IMPORTANT: Before returning, verify each file has exactly 49 keywords. If you have fewer — add relevant synonyms or related terms to reach exactly 49.
+1. Title: exactly 3 sentences ending with periods, max 150 chars total, commercial quality
+2. Keywords: generate 55 relevant keywords — single words or max 2-word phrases only. All must be relevant to the image content and commercial context. No generic fillers.
 
 Return ONLY raw JSON array:
 [
@@ -583,7 +581,15 @@ class App(tk.Tk):
                 matched=next((r for r in res if r.get("index",0)-1==idx),None)
                 if matched is None and idx<len(res): matched=res[idx]
                 kws=clean_keywords((matched.get("keywords",[]) if matched else []))[:KW_COUNT]
-                title=clean_title(matched.get("title","") if matched else "")
+                raw_title=clean_title(matched.get("title","") if matched else "")
+                # Trim title to 150 chars at last sentence boundary
+                if len(raw_title) > 150:
+                    cut=raw_title[:150]
+                    last_dot=cut.rfind('.')
+                    title=cut[:last_dot+1] if last_dot>50 else cut.rsplit(' ',1)[0]+'.'
+                else:
+                    title=raw_title
+                if title and not title.endswith('.'): title+='.'
                 results.append({"filename":item["name"],"title":title,"keywords":kws})
                 if matched:
                     self.after(0,self._log,
